@@ -1,9 +1,19 @@
-from fastapi import FastAPI, Request, Body
-from fastapi.responses import JSONResponse
-import tempfile, shutil, os, git, json
+from fastapi import FastAPI
 
-app = FastAPI()
+from routers import tasks, templates, analytics
+
+app = FastAPI(
+    title="Byebug Backend API",
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+)
+
+# Register routers for each service
+app.include_router(tasks.router, prefix="/api")
+app.include_router(templates.router, prefix="/api")
+app.include_router(analytics.router, prefix="/api")
 
 @app.get("/ping")
-def ping():
-    return JSONResponse(content={"message": "pong"})
+async def ping():
+    """Health check endpoint."""
+    return {"message": "pong"}
