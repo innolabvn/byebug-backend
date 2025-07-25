@@ -15,7 +15,8 @@ RUN wget -q https://packages.microsoft.com/config/debian/11/packages-microsoft-p
     dpkg -i packages-microsoft-prod.deb && \
     apt-get update && \
     apt-get install -y powershell && \
-    rm packages-microsoft-prod.deb
+    rm packages-microsoft-prod.deb && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 # Copy application files
