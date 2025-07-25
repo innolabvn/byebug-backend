@@ -1,0 +1,25 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Packages
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+ENV/
+.env
+
+# pytest cache
+.pytest_cache/
+
+# Mac files
+.DS_Store
+
+# Docker files
+*.log
+
