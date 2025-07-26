@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
+from fastapi import APIRouter, HTTPException, Query
+from typing import List, Optional
+from urllib.parse import quote
+from jinja2 import Template as JinjaTemplate
 
 from models import Task, TaskUpdate
 from database import get_database
 
-router = APIRouter()
+router = APIRouter(tags=["tasks"])
 
-@router.get("/tags", response_model=List[Task])
+@router.get("/tasks", response_model=List[Task])
 async def get_all_tasks():
     """Return all tasks in the database."""
     db = get_database()
@@ -15,15 +17,29 @@ async def get_all_tasks():
     return tasks
 
 @router.post("/tasks", response_model=Task, status_code=201)
-async def create_task(task: Task):
-    """Create a new task."""
+async def create_task(
+    task: Task,
+    template_id: Optional[str] = Query(None),
+    base_url: str = Query("https://chat.openai.com/codex"),
+):
+    """Create a new task and optionally generate a Codex URL."""
     db = get_database()
-    # Prevent duplicates based on provided ID
     if await db.byebug.tasks.find_one({"id": task.id}):
         raise HTTPException(status_code=400, detail="Task already exists")
-    # Insert the new task
-    await db.byebug.tasks.insert_one(task.dict())
-    return task
+
+    task_data = task.dict()
+
+    if template_id:
+        template = await db.byebug.templates.find_one({"id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail="Template not found")
+        tpl = JinjaTemplate(template["content"])
+        prompt = tpl.render(task=task_data)
+        task_data["prompt"] = prompt
+        task_data["codex_url"] = f"{base_url}?prompt={quote(prompt)}"
+
+    await db.byebug.tasks.insert_one(task_data)
+    return task_data
 
 @router.get("/tasks/{task_id}", response_model=Task)
 async def get_task(task_id: str):
@@ -56,4 +72,23 @@ async def delete_task(task_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Task not found")
     return
+
+
+@router.post("/tasks/{task_id}/run-codex")
+async def run_codex(task_id: str):
+    """Mark task as in-progress and return its Codex URL."""
+    db = get_database()
+    task = await db.byebug.tasks.find_one({"id": task_id})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    codex_url = task.get("codex_url")
+    if not codex_url:
+        raise HTTPException(status_code=400, detail="Task has no Codex URL")
+
+    await db.byebug.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"status": "progress"}},
+    )
+    return {"codex_url": codex_url, "prompt": task.get("prompt")}
 
