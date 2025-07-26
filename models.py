@@ -16,6 +16,8 @@ class Task(BaseModel):
     status: Literal['open', 'progress', 'fixed', 'failed']
     history: List[HistoryItem]
     github_link: Optional[str] = None
+    codex_url: Optional[str] = None
+    prompt: Optional[str] = None
     created_at: str
 
 class SubTag(BaseModel):
@@ -81,6 +83,8 @@ class TaskUpdate(BaseModel):
     status: Optional[Literal['open', 'progress', 'fixed', 'failed']] = None
     history: Optional[List[HistoryItem]] = None
     github_link: Optional[str] = None
+    codex_url: Optional[str] = None
+    prompt: Optional[str] = None
 
 class TemplateUpdate(BaseModel):
     name: Optional[str] = None
