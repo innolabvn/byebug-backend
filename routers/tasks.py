@@ -6,9 +6,9 @@ from jinja2 import Template as JinjaTemplate
 from models import Task, TaskUpdate
 from database import get_database
 
-router = APIRouter()
+router = APIRouter(tags=["tasks"])
 
-@router.get("/tags", response_model=List[Task])
+@router.get("/tasks", response_model=List[Task])
 async def get_all_tasks():
     """Return all tasks in the database."""
     db = get_database()
@@ -86,6 +86,9 @@ async def run_codex(task_id: str):
     if not codex_url:
         raise HTTPException(status_code=400, detail="Task has no Codex URL")
 
-    await db.byebug.tasks.update_one({"id": task_id}, {"$set": {"status": "progress"}})
+    await db.byebug.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"status": "progress"}},
+    )
     return {"codex_url": codex_url, "prompt": task.get("prompt")}
 

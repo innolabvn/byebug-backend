@@ -4,7 +4,7 @@ from typing import List
 from models import TestRun, Bug, ModuleCoverage, Analytics
 from database import get_database
 
-router = APIRouter()
+router = APIRouter(tags=["analytics"])
 
 @router.get("/analytics/test-runs", response_model=List[TestRun])
 async def get_test_runs():

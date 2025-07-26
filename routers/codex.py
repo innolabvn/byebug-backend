@@ -5,9 +5,9 @@ from jinja2 import Template as JinjaTemplate
 
 from database import get_database
 
-router = APIRouter()
+router = APIRouter(prefix="/codex", tags=["codex"])
 
-@router.get("/codex/url/{task_id}")
+@router.get("/url/{task_id}")
 async def generate_codex_url(
     task_id: str,
     template_id: str = Query(...),

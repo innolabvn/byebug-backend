@@ -4,7 +4,7 @@ from typing import List
 from models import Template, TemplateUpdate
 from database import get_database
 
-router = APIRouter()
+router = APIRouter(tags=["templates"])
 
 @router.get("/templates", response_model=List[Template])
 async def list_templates():
