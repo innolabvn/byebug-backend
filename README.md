@@ -35,3 +35,15 @@ The API will be available at `http://localhost:5000`. Interactive documentation 
 - `GET /api/analytics/bugs`
 - `GET /api/analytics/coverage`
 - `GET /api/analytics/summary`
+
+## Codex Executor
+
+A helper script `codex_executor.py` automates launching Codex with Selenium. It opens the Codex UI with a given prompt, selects the configured repository, clicks the **Code** button and writes logs to both a text file and a JSON file.
+
+### Usage
+
+```bash
+python codex_executor.py "<prompt>" <repo_label> <chrome_user_data_dir> [--profile Default] [--log path/to/logfile.log] [--json-log path/to/log.json]
+```
+
+Both log files are appended to each time the script runs so you can inspect the execution history later.
