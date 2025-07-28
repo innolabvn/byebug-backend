@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 # Copy Chrome package and install it
 # The .deb file must exist in the build context
-COPY chrome_114_amd64.deb /tmp/
-RUN apt-get update && apt-get install -y /tmp/chrome_114_amd64.deb && rm /tmp/chrome_114_amd64.deb
+# COPY chrome_114_amd64.deb /tmp/
+# RUN apt-get update && apt-get install -y /tmp/chrome_114_amd64.deb && rm /tmp/chrome_114_amd64.deb
 
 # Copy requirements and install dependencies
 COPY requirements.txt .
